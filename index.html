@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1d6b57">
+<title>Smočnica</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f2f4f1; --surface:#ffffff; --ink:#18231f; --muted:#5b6862; --line:#d9dfda;
+  --accent:#1d6b57; --accent-ink:#ffffff; --accent-soft:#e1f1ea;
+  --warn:#9a4a07; --warn-bg:#fdeedd; --crit:#b3261e; --crit-bg:#fbe4e1; --field:#ffffff;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101714; --surface:#18221e; --ink:#e6eee9; --muted:#9aaba3; --line:#2c3a34;
+    --accent:#5fc3a4; --accent-ink:#06231a; --accent-soft:#1c3a2f;
+    --warn:#f0a35e; --warn-bg:#3a2815; --crit:#ff8f86; --crit-bg:#3f1d1a; --field:#101714; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.4;padding:0 16px 96px}
+.wrap{max-width:720px;margin:0 auto}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-size:28px;line-height:1.1;margin:0;letter-spacing:-.01em}
+.summary{color:var(--muted);font-size:14px;margin:0}
+.tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+button{font:inherit;color:inherit;cursor:pointer}
+.tab,.btn{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:0 16px;font-weight:600}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab .n{display:inline-block;min-width:22px;margin-left:6px;padding:0 6px;border-radius:99px;background:var(--crit-bg);color:var(--crit);font-size:13px;text-align:center}
+.tab[aria-selected="true"] .n{background:rgba(255,255,255,.22);color:inherit}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.ghost{background:transparent}
+.spacer{flex:1}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.filters .search{grid-column:1/-1}
+textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:200px;resize:vertical}
+input,select{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;min-height:44px;padding:0 12px;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.list{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.group{font-family:var(--f-display);font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 4px}
+.item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 10px 14px}
+.item .main{flex:1;min-width:0;text-align:left;background:none;border:0;padding:4px 0}
+.item h3{font-size:16px;font-weight:600;margin:0;overflow-wrap:anywhere}
+.item .meta{margin:2px 0 0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{font-size:12px;font-weight:600;border-radius:99px;padding:2px 9px;background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.crit{background:var(--crit-bg);color:var(--crit)}
+.chip.est{background:transparent;border:1px dashed var(--muted);color:var(--muted)}
+.qty{display:flex;align-items:center;gap:2px;flex:none}
+.qty button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:22px;font-weight:600;line-height:1}
+.qty button:active{background:var(--accent-soft)}
+.qty output{min-width:38px;text-align:center;font-family:var(--f-display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.qty output.zero{color:var(--crit)}
+.empty{text-align:center;color:var(--muted);padding:40px 12px;border:1px dashed var(--line);border-radius:12px}
+.empty strong{display:block;font-family:var(--f-display);font-size:18px;color:var(--ink);margin-bottom:4px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row > *{min-width:0}
+.shop .item{align-items:flex-start}
+.shop .acts{display:flex;flex-direction:column;gap:6px;flex:none}
+.shop .acts .btn{padding:0 12px;font-size:14px}
+.addbar{display:flex;gap:8px;margin:14px 0}
+.fab{position:fixed;right:16px;bottom:16px;z-index:15;min-height:56px;padding:0 22px;border-radius:99px;background:var(--accent);color:var(--accent-ink);border:0;font-weight:600;font-size:16px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+dialog{border:0;padding:0;border-radius:16px;width:min(560px,calc(100% - 24px));max-height:92vh;background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.sheet{padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px}
+.sheet h2{font-family:var(--f-display);font-size:22px;margin:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg button{min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;z-index:40;width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;font-size:14px}
+.toast button{background:none;border:0;color:inherit;text-decoration:underline;font-weight:600;min-height:44px;padding:0 4px}
+.err{background:var(--crit-bg);color:var(--crit);border-radius:10px;padding:12px;margin-top:14px}
+.nutri{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.45}
+.nutri h4{margin:0;font-family:var(--f-display);font-size:16px}
+.nutri table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.nutri td{padding:3px 0;border-bottom:1px solid var(--line)}
+.nutri td:last-child{text-align:right}
+.nutri a{color:var(--accent);font-weight:600}
+.ns{display:inline-block;min-width:28px;text-align:center;border-radius:6px;font-weight:700;color:#fff;padding:1px 6px;margin-left:4px}
+.ns-a{background:#038141}.ns-b{background:#85bb2f}.ns-c{background:#fecb02;color:#18231f}.ns-d{background:#ee8100}.ns-e{background:#e63e11}
+.cam{position:relative;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:4/3;max-width:100%}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .guide{position:absolute;left:8%;right:8%;top:34%;bottom:34%;border:2px solid rgba(255,255,255,.9);border-radius:10px;box-shadow:0 0 0 999px rgba(0,0,0,.28)}
+h1{cursor:pointer}
+[hidden]{display:none!important}
+@media (max-width:420px){.item{gap:8px;padding-left:12px}.qty button{width:40px}.qty output{min-width:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Smočnica</h1>
+      <p class="summary" id="summary">Učitavam zalihu…</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabStock" aria-selected="true">Zaliha</button>
+      <button class="tab" role="tab" id="tabShop" aria-selected="false">Za kupnju<span class="n" id="shopN" hidden>0</span></button>
+      <span class="spacer"></span>
+      <button class="btn" id="recipeTop">Recept</button>
+      <button class="btn" id="scanTop">Skeniraj</button>
+    </div>
+  </header>
+
+  <div id="errBox" class="err" hidden></div>
+
+  <section id="viewStock">
+    <div class="filters">
+      <input class="search" id="q" type="search" placeholder="Traži artikl…" autocomplete="off" aria-label="Traži artikl">
+      <select id="fLoc" aria-label="Lokacija"></select>
+      <select id="fSort" aria-label="Poredak">
+        <option value="loc">Po lokaciji</option>
+        <option value="name">Po nazivu</option>
+        <option value="low">Najmanje zalihe prvo</option>
+        <option value="exp">Rok trajanja</option>
+      </select>
+    </div>
+    <div id="stockList"></div>
+  </section>
+
+  <section id="viewShop" hidden>
+    <form class="addbar" id="shopAdd">
+      <input id="shopName" placeholder="Nešto novo za kupiti…" aria-label="Novi artikl za popis" autocomplete="off">
+      <button class="btn primary" type="submit">Dodaj</button>
+    </form>
+    <div id="shopList"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="copyShop">Kopiraj popis</button></div>
+  </section>
+</div>
+
+<button class="fab" id="fabAdd">+ Novi artikl</button>
+<div id="toastHost"></div>
+
+<dialog id="dlgItem">
+  <form class="sheet" id="formItem">
+    <h2 id="itemTitle">Artikl</h2>
+    <label>Naziv<input id="fName" required autocomplete="off"></label>
+    <div class="two">
+      <label>Količina (kom)<input id="fQty" type="number" inputmode="numeric" min="0" step="1" value="1"></label>
+      <label>Minimum (upozori ispod)<input id="fMin" type="number" inputmode="numeric" min="0" step="1" value="0"></label>
+    </div>
+    <label>Lokacija<input id="fLocIn" list="locList" autocomplete="off" placeholder="npr. Tamni ormar – 1. polica"></label>
+    <datalist id="locList"></datalist>
+    <label>Kategorija<input id="fCat" list="catList" autocomplete="off" placeholder="npr. Riba i konzerve"></label>
+    <datalist id="catList"></datalist>
+    <label>Barkod
+      <div class="row" style="flex-wrap:nowrap">
+        <input id="fCode" inputmode="numeric" autocomplete="off" placeholder="neobavezno">
+        <button type="button" class="btn" id="fCodeScan" style="flex:none">Fotografiraj</button>
+      </div>
+    </label>
+    <div class="two">
+      <label>Rok trajanja<input id="fExp" type="date"></label>
+      <label>Napomena<input id="fNote" autocomplete="off" placeholder="npr. domaće, 08/2026"></label>
+    </div>
+    <div id="nutriBox" class="nutri" hidden></div>
+    <p class="hint" id="itemUpd" hidden></p>
+    <div class="row">
+      <button class="btn primary" type="submit" style="flex:1">Spremi</button>
+      <button class="btn ghost" type="button" id="itemCancel">Odustani</button>
+      <button class="btn danger" type="button" id="itemDel" hidden>Obriši artikl</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlgRecipe">
+  <div class="sheet">
+    <h2>Recept od onoga što imamo</h2>
+    <label>Želja (neobavezno)<input id="recipeWish" autocomplete="off" placeholder="npr. večera za 4 osobe, brzo, bez mesa"></label>
+    <p class="hint">Kopirajte tekst i zalijepite ga u Claude, Gemini ili ChatGPT.</p>
+    <textarea id="recipeText" readonly aria-label="Tekst za AI"></textarea>
+    <div class="row">
+      <button class="btn primary" id="recipeCopy" style="flex:1">Kopiraj</button>
+      <button class="btn ghost" id="recipeClose">Zatvori</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgLogin">
+  <form class="sheet" id="formLogin">
+    <h2>Prijava u Smočnicu</h2>
+    <p class="hint">Upišite svoje ime (vidi se tko je što mijenjao) i PIN kućanstva. Na ovom uređaju trebate to samo jednom.</p>
+    <label>Vaše ime<input id="lgWho" autocomplete="given-name" required></label>
+    <label>PIN<input id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required></label>
+    <p class="hint" id="lgMsg"></p>
+    <button class="btn primary" type="submit">Prijavi se</button>
+  </form>
+</dialog>
+
+<dialog id="dlgScan">
+  <div class="sheet">
+    <h2>Skeniranje barkoda</h2>
+    <div class="seg" role="group" aria-label="Način">
+      <button type="button" id="modeAdd" aria-pressed="true">Dodajem (+1)</button>
+      <button type="button" id="modeTake" aria-pressed="false">Uzimam (−1)</button>
+    </div>
+    <div class="cam" id="camBox" hidden><video id="scanVideo" playsinline muted autoplay></video><div class="guide"></div></div>
+    <input id="scanFile" type="file" accept="image/*" capture="environment" hidden>
+    <button class="btn" id="scanShoot">Fotografiraj barkod</button>
+    <p class="hint" id="scanMsg"></p>
+    <form class="row" id="scanManual" style="flex-wrap:nowrap">
+      <input id="scanCode" inputmode="numeric" placeholder="Brojevi s barkoda" autocomplete="off">
+      <button class="btn" type="submit" style="flex:none">Traži</button>
+    </form>
+    <button class="btn ghost" id="scanClose">Zatvori</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+"use strict";
+var LOC_ORDER=["Metalni regal – gore","Metalni regal – sredina","Metalni regal – dolje","Metalni regal – pod i ulja","Bijeli regal – slatko","Bijeli regal – zimnica","Tamni ormar – 1. polica","Tamni ormar – 2. polica","Tamni ormar – 3. polica","Tamni ormar – dolje","Hladnjak","Zamrzivač"];
+var SCAN_HINT="Usmjerite kameru na barkod – prepoznaje se sam. Ako ne ide, fotografirajte ga ili upišite brojeve.";
+var $=function(id){return document.getElementById(id)};
+var items={},ready=false,tab="stock",scanMode=(function(){try{return localStorage.getItem("smocnica_mode")==="take"?"take":"add"}catch(e){return "add"}})(),me="",editingId=null;
+var seq=0,inflight={},latest={},busy=0;
+var today=(function(){var t=new Date();return Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())})();
+
+var API="https://script.google.com/macros/s/AKfycbzAvPbouHYDwp_9rrQfJzZxl_RzW7q33-Ja1axmuv0Iw_4CtmHi2-0sIHC70usI3hhM/exec";
+var MEM_AUTH=null;
+function cred(){try{var s=localStorage.getItem("smocnica_auth");if(s)return JSON.parse(s)}catch(e){}return MEM_AUTH}
+function run(fn){
+  var a=[].slice.call(arguments,1),c=cred()||{};
+  return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({pin:c.pin||"",who:c.who||"",fn:fn,args:a})})
+    .then(function(r){return r.json()})
+    .then(function(j){if(!j||!j.ok){var m=(j&&j.error)||"Greška na poslužitelju.";if(/PIN/.test(m))showLogin(m);throw new Error(m)}return j.data});
+}
+function errMsg(e){var m=(e&&e.message)||String(e||"");if(/Failed to fetch|NetworkError|Load failed|JSON/i.test(m))return "Nema veze s poslužiteljem. Provjerite internet i pokušajte ponovno.";return m||"Nepoznata greška."}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fold(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d")}
+function locRank(l){var i=LOC_ORDER.indexOf(l);return i<0?(l?100:200):i}
+function daysTo(x){if(!x)return null;var t=Date.parse(x);return isNaN(t)?null:Math.round((t-today)/864e5)}
+function status(it){var q=it.qty||0;if(q===0)return "out";if((it.min||0)>0&&q<it.min)return "low";return "ok"}
+function needsBuy(it){if(it.buy==="da")return true;if(it.buy==="ne")return false;return status(it)!=="ok"}
+function need(it){return Math.max((it.min||0)-(it.qty||0),1)}
+function arr(){return Object.keys(items).map(function(id){return items[id]})}
+
+/* ---------- obavijesti ---------- */
+var toastTimer=null;
+function toast(msg,actLabel,act){
+  var h=$("toastHost");h.innerHTML="";
+  var t=document.createElement("div");t.className="toast";t.setAttribute("role","status");
+  var s=document.createElement("span");s.textContent=msg;t.appendChild(s);
+  if(actLabel){var b=document.createElement("button");b.textContent=actLabel;b.onclick=function(){h.innerHTML="";act&&act()};t.appendChild(b)}
+  h.appendChild(t);clearTimeout(toastTimer);toastTimer=setTimeout(function(){h.innerHTML=""},actLabel?7000:3500);
+}
+function fail(e){toast("Nije spremljeno: "+errMsg(e))}
+
+/* ---------- učitavanje ---------- */
+function load(){
+  if(busy||Object.keys(inflight).length)return;
+  run("getData").then(function(d){
+    if(busy||Object.keys(inflight).length)return;
+    me=d.me||"";var m={};d.items.forEach(function(i){m[i.id]=i});items=m;ready=true;$("errBox").hidden=true;render();
+  }).catch(function(e){
+    if(!ready){$("errBox").textContent=errMsg(e);$("errBox").hidden=false;$("summary").textContent="Zaliha nije učitana";$("stockList").innerHTML=""}
+  });
+}
+
+/* ---------- promjene ---------- */
+function bump(id,delta){
+  var it=items[id];if(!it)return null;
+  var before=it.qty||0;
+  if(delta<0&&before===0){toast(it.name+": zaliha je već 0.");return null}
+  it.qty=Math.max(0,before+delta);it.est=false;it.buy="";
+  var my=++seq;inflight[id]=(inflight[id]||0)+1;render();
+  run("change",id,delta).then(function(res){
+    inflight[id]--;
+    if(!latest[id]||latest[id].s<my)latest[id]={s:my,v:res};
+    if(!inflight[id]){items[id]=latest[id].v;delete latest[id];delete inflight[id];render()}
+  }).catch(function(e){
+    inflight[id]--;if(!inflight[id]){delete inflight[id];delete latest[id]}
+    if(items[id])items[id].qty=Math.max(0,(items[id].qty||0)-delta);
+    render();fail(e);
+  });
+  return before;
+}
+function track(p){busy++;return p.then(function(v){busy--;return v},function(e){busy--;throw e})}
+
+/* ---------- prikaz ---------- */
+function chipsFor(it){
+  var c=[],s=status(it);
+  if(s==="out")c.push('<span class="chip crit">nema</span>');
+  else if(s==="low")c.push('<span class="chip warn">ispod minimuma ('+it.min+')</span>');
+  var d=daysTo(it.expiry);
+  if(d!==null){
+    if(d<0)c.push('<span class="chip crit">isteklo prije '+(-d)+' d</span>');
+    else if(d<=30)c.push('<span class="chip warn">ističe za '+d+' d</span>');
+    else c.push('<span class="chip">do '+esc(it.expiry.split("-").reverse().join(".")+".")+'</span>');
+  }
+  if(it.est)c.push('<span class="chip est">procjena sa slike</span>');
+  if(it.note)c.push('<span class="chip">'+esc(it.note)+'</span>');
+  return c.length?'<div class="chips">'+c.join("")+'</div>':"";
+}
+function itemHTML(it){
+  var q=it.qty||0;
+  return '<li class="item" data-id="'+esc(it.id)+'">'+
+    '<button class="main" data-act="edit" aria-label="Uredi: '+esc(it.name)+'"><h3>'+esc(it.name)+'</h3>'+
+    '<p class="meta">'+esc([it.loc,it.cat].filter(Boolean).join(" · ")||"bez lokacije")+'</p>'+chipsFor(it)+'</button>'+
+    '<div class="qty"><button data-act="dec" aria-label="Uzmi jedan">−</button><output class="'+(q===0?"zero":"")+'">'+q+'</output><button data-act="inc" aria-label="Dodaj jedan">+</button></div></li>';
+}
+function renderFilters(){
+  var cur=$("fLoc").value||"",locs={};
+  arr().forEach(function(i){if(i.loc)locs[i.loc]=1});
+  var names=Object.keys(locs).sort(function(a,b){return locRank(a)-locRank(b)||a.localeCompare(b,"hr")});
+  $("fLoc").innerHTML='<option value="">Sve lokacije</option>'+names.map(function(l){return '<option value="'+esc(l)+'">'+esc(l)+'</option>'}).join("");
+  $("fLoc").value=names.indexOf(cur)>=0?cur:"";
+}
+function flat(list){return '<ul class="list">'+list.map(itemHTML).join("")+'</ul>'}
+function renderStock(){
+  var host=$("stockList");
+  if(!ready){host.innerHTML='<div class="empty"><strong>Učitavam…</strong>Dohvaćam zalihu iz tablice.</div>';return}
+  if(!arr().length){host.innerHTML='<div class="empty"><strong>Zaliha je prazna</strong>Dodajte prvi artikl tipkom „Novi artikl” ili skenirajte barkod.</div>';return}
+  var q=fold($("q").value.trim()),loc=$("fLoc").value,sort=$("fSort").value;
+  var list=arr().filter(function(i){
+    if(loc&&i.loc!==loc)return false;
+    if(q&&fold([i.name,i.cat,i.loc,i.note,i.barcode].join(" ")).indexOf(q)<0)return false;
+    return true;
+  });
+  if(!list.length){host.innerHTML='<div class="empty"><strong>Ništa nije pronađeno</strong>Promijenite pretragu ili lokaciju.</div>';return}
+  var byName=function(a,b){return a.name.localeCompare(b.name,"hr")};
+  if(sort==="name"){host.innerHTML=flat(list.sort(byName));return}
+  if(sort==="low"){host.innerHTML=flat(list.sort(function(a,b){return (a.qty||0)-(b.qty||0)||byName(a,b)}));return}
+  if(sort==="exp"){host.innerHTML=flat(list.sort(function(a,b){var x=daysTo(a.expiry),y=daysTo(b.expiry);if(x===null&&y===null)return byName(a,b);if(x===null)return 1;if(y===null)return -1;return x-y}));return}
+  list.sort(function(a,b){return locRank(a.loc)-locRank(b.loc)||(a.loc||"").localeCompare(b.loc||"","hr")||byName(a,b)});
+  var out="",last=null;
+  list.forEach(function(i){
+    var g=i.loc||"Bez lokacije";
+    if(g!==last){if(last!==null)out+="</ul>";out+='<h2 class="group">'+esc(g)+'</h2><ul class="list">';last=g}
+    out+=itemHTML(i);
+  });
+  host.innerHTML=out+"</ul>";
+}
+function shopItems(){return arr().filter(needsBuy).sort(function(a,b){return (a.qty||0)-(b.qty||0)||a.name.localeCompare(b.name,"hr")})}
+function renderShop(){
+  var host=$("shopList"),l=shopItems();
+  if(!l.length){host.innerHTML='<div class="empty"><strong>Popis je prazan</strong>Artikli dolaze ovdje kad ih nestane ili padnu ispod minimuma.</div>';return}
+  host.innerHTML='<ul class="list shop">'+l.map(function(it){
+    return '<li class="item" data-id="'+esc(it.id)+'"><button class="main" data-act="edit" aria-label="Uredi: '+esc(it.name)+'"><h3>'+esc(it.name)+'</h3>'+
+      '<p class="meta">'+esc(it.loc||"bez lokacije")+' · na zalihi: '+(it.qty||0)+(it.min?" · minimum: "+it.min:"")+'</p></button>'+
+      '<div class="acts"><button class="btn primary" data-act="bought">Kupljeno +'+need(it)+'</button><button class="btn ghost" data-act="skip">Ne kupujem</button></div></li>';
+  }).join("")+'</ul>';
+}
+function render(){
+  renderFilters();
+  var all=arr(),low=shopItems().length;
+  var soon=all.filter(function(i){var d=daysTo(i.expiry);return d!==null&&d<=14}).length;
+  if(ready)$("summary").textContent=all.length+" artikala"+(soon?" · "+soon+" ističe uskoro":"");
+  var n=$("shopN");n.hidden=!low;n.textContent=low;
+  if(tab==="stock")renderStock();else renderShop();
+}
+function setTab(t){
+  tab=t;$("viewStock").hidden=t!=="stock";$("viewShop").hidden=t!=="shop";
+  $("tabStock").setAttribute("aria-selected",t==="stock");$("tabShop").setAttribute("aria-selected",t==="shop");
+  render();window.scrollTo(0,0);
+}
+
+/* ---------- uređivanje ---------- */
+function fillLists(){
+  var l={},c={};arr().forEach(function(i){if(i.loc)l[i.loc]=1;if(i.cat)c[i.cat]=1});
+  LOC_ORDER.forEach(function(x){l[x]=1});
+  $("locList").innerHTML=Object.keys(l).map(function(x){return '<option value="'+esc(x)+'">'}).join("");
+  $("catList").innerHTML=Object.keys(c).sort().map(function(x){return '<option value="'+esc(x)+'">'}).join("");
+}
+var delArmed=null;
+function openItem(id,pre){
+  var it=id?items[id]:Object.assign({name:"",qty:1,min:0,loc:"",cat:"",barcode:"",expiry:"",note:""},pre||{});
+  if(id&&!it)return;
+  editingId=id;fillLists();
+  $("itemTitle").textContent=id?"Uredi artikl":"Novi artikl";
+  $("fName").value=it.name||"";$("fQty").value=it.qty==null?1:it.qty;$("fMin").value=it.min||0;
+  $("fLocIn").value=it.loc||"";$("fCat").value=it.cat||"";$("fCode").value=it.barcode||"";$("fExp").value=it.expiry||"";$("fNote").value=it.note||"";
+  var u=$("itemUpd");u.hidden=!(id&&it.upd);u.textContent=id&&it.upd?"Zadnja izmjena: "+it.upd+(it.by?" · "+it.by:""):"";
+  $("itemDel").hidden=!id;$("itemDel").textContent="Obriši artikl";delArmed=null;
+  showNutri(it.barcode||"");
+  $("dlgItem").showModal();
+}
+$("formItem").addEventListener("submit",function(ev){
+  ev.preventDefault();
+  var o={name:$("fName").value.trim(),qty:Math.max(0,parseInt($("fQty").value,10)||0),min:Math.max(0,parseInt($("fMin").value,10)||0),
+    loc:$("fLocIn").value.trim(),cat:$("fCat").value.trim(),barcode:$("fCode").value.replace(/\s+/g,""),expiry:$("fExp").value,note:$("fNote").value.trim()};
+  if(!o.name)return;
+  if(o.barcode){var dup=arr().filter(function(i){return i.barcode===o.barcode&&i.id!==editingId})[0];if(dup){toast("Taj barkod već ima: "+dup.name);return}}
+  $("dlgItem").close();
+  if(editingId){
+    var old=items[editingId];if(!old)return;
+    o.id=editingId;o.est=old.est&&o.qty===old.qty;o.buy=o.qty===old.qty?old.buy:"";
+    items[editingId]=Object.assign({},old,o);render();
+    track(run("saveItem",o)).then(function(res){items[res.id]=res;render();toast("Spremljeno.")}).catch(function(e){items[old.id]=old;render();fail(e)});
+  }else{
+    o.est=false;o.buy="";toast("Spremam…");
+    track(run("saveItem",o)).then(function(res){items[res.id]=res;render();toast("Dodano: "+res.name)}).catch(fail);
+  }
+});
+$("itemCancel").onclick=function(){$("dlgItem").close()};
+$("itemDel").onclick=function(){
+  if(!editingId)return;
+  if(delArmed!==editingId){
+    delArmed=editingId;this.textContent="Potvrdi brisanje";
+    var armed=editingId;setTimeout(function(){if(delArmed===armed){delArmed=null;$("itemDel").textContent="Obriši artikl"}},4000);return;
+  }
+  var id=editingId,backup=items[id];delete items[id];$("dlgItem").close();render();
+  track(run("deleteItem",id)).then(function(b){
+    b=b||backup;
+    toast("Obrisano: "+b.name,"Poništi",function(){
+      track(run("saveItem",b)).then(function(res){items[res.id]=res;render();toast("Vraćeno: "+res.name)}).catch(fail);
+    });
+  }).catch(function(e){items[id]=backup;render();fail(e)});
+};
+
+/* ---------- barkod ---------- */
+var zxP=null;
+function loadZX(){
+  if(window.ZXing)return Promise.resolve();
+  if(zxP)return zxP;
+  zxP=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";s.onload=res;s.onerror=function(){zxP=null;rej(new Error("zxing"))};document.head.appendChild(s)});
+  return zxP;
+}
+function decodeFile(file){
+  var canvas=document.createElement("canvas");
+  return createImageBitmap(file).then(function(bmp){
+    var sc=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+    canvas.width=Math.round(bmp.width*sc);canvas.height=Math.round(bmp.height*sc);
+    canvas.getContext("2d").drawImage(bmp,0,0,canvas.width,canvas.height);
+    if("BarcodeDetector" in window){
+      return new window.BarcodeDetector().detect(canvas).then(function(r){return r&&r.length?r[0].rawValue:null}).catch(function(){return null});
+    }
+    return null;
+  }).catch(function(){return null}).then(function(code){
+    if(code||!canvas.width)return code;
+    return loadZX().then(function(){
+      return new window.ZXing.BrowserMultiFormatReader().decodeFromImageUrl(canvas.toDataURL("image/jpeg",0.9));
+    }).then(function(r){return r.getText()}).catch(function(){return null});
+  });
+}
+var scanTarget="scan";
+function pickPhoto(target){scanTarget=target;$("scanFile").value="";$("scanFile").click()}
+$("scanFile").addEventListener("change",function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  if(scanTarget==="scan")$("scanMsg").textContent="Čitam barkod…";else toast("Čitam barkod…");
+  decodeFile(f).then(function(code){
+    if(!code){var m="Barkod nije prepoznat. Fotografirajte bliže i uz više svjetla ili upišite brojeve.";if(scanTarget==="scan")$("scanMsg").textContent=m;else toast(m);return}
+    if(scanTarget==="form"){
+      $("fCode").value=code;toast("Barkod: "+code);showNutri(code);
+      if(!$("fName").value.trim())lookupName(code).then(function(n){if(n&&!$("fName").value.trim()){$("fName").value=n;toast("Pronađeno: "+n)}});
+      return;
+    }
+    $("scanMsg").textContent="Barkod: "+code;handleCode(code);
+  });
+});
+$("fCodeScan").onclick=function(){pickPhoto("form")};
+$("fCode").addEventListener("change",function(){showNutri(this.value.replace(/\s+/g,""))});
+/* Naziv proizvoda: prvo hrvatski katalog u tablici (list Katalog), zatim Open Food Facts */
+function lookupName(code){
+  if(!/^\d{8,14}$/.test(code))return Promise.resolve(null);
+  return run("lookupBarcode",code).catch(function(){return null}).then(function(n){return n||lookupOFF(code)});
+}
+function lookupOFF(code){
+  return fetchOFF(code)
+    .then(function(p){
+      if(!p)return null;
+      var n=String(p.product_name_hr||p.product_name||p.generic_name||"").trim();
+      if(!n)return null;
+      var b=String(p.brands||"").split(",")[0].trim();
+      if(b&&fold(n).indexOf(fold(b))<0)n=b+" "+n;
+      var q=String(p.quantity||"").trim();
+      if(q&&fold(n).indexOf(fold(q))<0)n+=" "+q;
+      return n;
+    }).catch(function(){return null});
+}
+/* Open Food Facts (hr.openfoodfacts.org je ista baza): naziv, sastojci, alergeni, nutritivne vrijednosti */
+var offCache={};
+function fetchOFF(code){
+  if(!/^\d{8,14}$/.test(code)||!window.fetch)return Promise.resolve(null);
+  if(offCache.hasOwnProperty(code))return Promise.resolve(offCache[code]);
+  return fetch("https://world.openfoodfacts.org/api/v2/product/"+code+".json?lc=hr&fields=product_name,product_name_hr,generic_name,brands,quantity,ingredients_text_hr,ingredients_text,allergens_tags,nutriments,nutriscore_grade")
+    .then(function(r){return r.ok?r.json():null})
+    .then(function(j){var p=j&&j.status===1&&j.product?j.product:null;offCache[code]=p;return p})
+    .catch(function(){return null});
+}
+var ALG={milk:"mlijeko",gluten:"gluten",eggs:"jaja",nuts:"orašasti plodovi",peanuts:"kikiriki",soybeans:"soja",fish:"riba",crustaceans:"rakovi",molluscs:"mekušci",celery:"celer",mustard:"gorušica","sesame-seeds":"sezam","sulphur-dioxide-and-sulphites":"sulfiti",lupin:"lupina"};
+function fmtNum(x){return String(Math.round(Number(x)*10)/10).replace(".",",")}
+function showNutri(code){
+  var box=$("nutriBox");box.hidden=true;box.innerHTML="";box.setAttribute("data-code",code||"");
+  if(!code)return;
+  fetchOFF(code).then(function(p){
+    if(!p||box.getAttribute("data-code")!==code||!$("dlgItem").open)return;
+    var n=p.nutriments||{};
+    var rows=[["Energija","energy-kcal_100g","kcal"],["Masti","fat_100g","g"],["– od toga zasićene","saturated-fat_100g","g"],["Ugljikohidrati","carbohydrates_100g","g"],["– od toga šećeri","sugars_100g","g"],["Vlakna","fiber_100g","g"],["Bjelančevine","proteins_100g","g"],["Sol","salt_100g","g"]];
+    var tr=rows.filter(function(r){return n[r[1]]!=null&&n[r[1]]!==""&&!isNaN(Number(n[r[1]]))}).map(function(r){return "<tr><td>"+r[0]+"</td><td>"+fmtNum(n[r[1]])+" "+r[2]+"</td></tr>"}).join("");
+    var ing=String(p.ingredients_text_hr||p.ingredients_text||"").trim();
+    var al=(p.allergens_tags||[]).map(function(t){t=String(t).replace(/^[a-z]{2}:/,"");return ALG[t]||t}).join(", ");
+    var g=String(p.nutriscore_grade||"").toLowerCase();if(!/^[a-e]$/.test(g))g="";
+    if(!tr&&!ing&&!al&&!g)return;
+    var h="<h4>Sastojci i nutritivne vrijednosti</h4>";
+    if(g)h+="<div>Nutri-Score<span class=\"ns ns-"+g+"\">"+g.toUpperCase()+"</span></div>";
+    if(al)h+="<div><strong>Alergeni:</strong> "+esc(al)+"</div>";
+    if(ing)h+="<div><strong>Sastojci:</strong> "+esc(ing)+"</div>";
+    if(tr)h+="<table><tbody><tr><td><strong>Na 100 g / 100 ml</strong></td><td></td></tr>"+tr+"</tbody></table>";
+    h+="<a href=\"https://hr.openfoodfacts.org/product/"+code+"\" target=\"_blank\" rel=\"noopener\">Otvori na Open Food Facts</a>";
+    box.innerHTML=h;box.hidden=false;
+  });
+}
+function findByCode(code){var a=arr();for(var i=0;i<a.length;i++){if(a[i].barcode===code)return a[i].id}return null}
+function handleCode(code){
+  code=String(code).replace(/\s+/g,"");if(!code)return;
+  var id=findByCode(code);
+  if(id){
+    var d=scanMode==="take"?-1:1,it=items[id];
+    var before=bump(id,d);if(before==null)return;
+    var after=Math.max(0,before+d);
+    toast(it.name+": "+before+" → "+after,"Poništi",function(){bump(id,-d)});
+    $("scanMsg").textContent=it.name+": "+before+" → "+after+". Možete skenirati sljedeći.";
+  }else if(scanMode==="add"){
+    $("scanMsg").textContent="Tražim proizvod u bazi…";
+    lookupName(code).then(function(n){
+      $("dlgScan").close();openItem(null,{barcode:code,qty:1,name:n||""});
+      toast(n?"Pronađeno: "+n+". Provjerite naziv, dodajte lokaciju i spremite.":"Proizvod nije u bazi. Upišite naziv i spremite.");
+    });
+  }else{
+    $("scanMsg").textContent="Barkod "+code+" još nije spremljen. Prebacite na „Dodajem” i unesite artikl, ili ga dodajte postojećem artiklu kroz „Uredi”.";
+  }
+}
+function setMode(m){scanMode=m;try{localStorage.setItem("smocnica_mode",m)}catch(e){}$("modeTake").setAttribute("aria-pressed",m==="take");$("modeAdd").setAttribute("aria-pressed",m==="add")}
+$("modeTake").onclick=function(){setMode("take")};$("modeAdd").onclick=function(){setMode("add")};setMode(scanMode);
+$("scanShoot").onclick=function(){pickPhoto("scan")};
+$("scanManual").addEventListener("submit",function(e){e.preventDefault();var v=$("scanCode").value;$("scanCode").value="";handleCode(v)});
+$("scanClose").onclick=function(){$("dlgScan").close()};
+/* ---------- skeniranje kamerom uživo ---------- */
+var stream=null,scanTimer=null,lastCode="",lastAt=0;
+function camFail(){stopCam();$("scanMsg").textContent="Kamera nije dostupna. Dopustite pristup kameri u pregledniku ili fotografirajte barkod / upišite brojeve.";}
+function gotCode(code){
+  code=String(code||"").replace(/\s+/g,"");if(!code)return;
+  var now=Date.now();if(code===lastCode&&now-lastAt<2500)return;
+  lastCode=code;lastAt=now;if(navigator.vibrate)try{navigator.vibrate(80)}catch(e){}
+  $("scanMsg").textContent="Barkod: "+code;handleCode(code);
+}
+function loopBD(det){
+  if(!stream)return;
+  det.detect($("scanVideo")).then(function(r){if(r&&r.length)gotCode(r[0].rawValue)}).catch(function(){})
+    .then(function(){if(stream)scanTimer=setTimeout(function(){loopBD(det)},180)});
+}
+function loopZX(){
+  loadZX().then(function(){
+    var Z=window.ZXing,hints=new Map();
+    hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E,Z.BarcodeFormat.CODE_128]);
+    hints.set(Z.DecodeHintType.TRY_HARDER,true);
+    var rd=new Z.MultiFormatReader();rd.setHints(hints);
+    var cv=document.createElement("canvas"),ctx=cv.getContext("2d",{willReadFrequently:true});
+    (function tick(){
+      if(!stream)return;
+      var v=$("scanVideo");
+      if(v.videoWidth){
+        var w=Math.min(960,v.videoWidth),h=Math.round(v.videoHeight*w/v.videoWidth);
+        cv.width=w;cv.height=h;ctx.drawImage(v,0,0,w,h);
+        try{var res=rd.decodeWithState(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(cv))));if(res)gotCode(res.getText())}catch(e){}
+      }
+      scanTimer=setTimeout(tick,250);
+    })();
+  }).catch(camFail);
+}
+function startCam(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camFail();return}
+  $("camBox").hidden=false;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false}).then(function(s){
+    if(!$("dlgScan").open){s.getTracks().forEach(function(t){t.stop()});return}
+    stream=s;var v=$("scanVideo");v.srcObject=s;return v.play();
+  }).then(function(){
+    if(!stream)return;
+    if("BarcodeDetector" in window){
+      window.BarcodeDetector.getSupportedFormats().then(function(f){
+        var want=["ean_13","ean_8","upc_a","upc_e","code_128"].filter(function(x){return f.indexOf(x)>=0});
+        if(!want.length)throw new Error("no formats");
+        loopBD(new window.BarcodeDetector({formats:want}));
+      }).catch(loopZX);
+    }else loopZX();
+  }).catch(camFail);
+}
+function stopCam(){
+  clearTimeout(scanTimer);
+  if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}
+  var v=$("scanVideo");if(v)v.srcObject=null;$("camBox").hidden=true;
+}
+$("scanTop").onclick=function(){$("scanMsg").textContent=SCAN_HINT;$("dlgScan").showModal();startCam()};
+$("dlgScan").addEventListener("close",stopCam);
+
+/* ---------- prijava (ime + PIN kućanstva) ---------- */
+function showLogin(msg){
+  var c=cred()||{};$("lgWho").value=c.who||"";$("lgPin").value="";$("lgMsg").textContent=msg||"";
+  if(!$("dlgLogin").open)$("dlgLogin").showModal();
+}
+$("formLogin").addEventListener("submit",function(e){
+  e.preventDefault();
+  var who=$("lgWho").value.trim(),pin=$("lgPin").value.trim();if(!who||!pin)return;
+  MEM_AUTH={who:who,pin:pin};try{localStorage.setItem("smocnica_auth",JSON.stringify(MEM_AUTH))}catch(x){}
+  $("lgMsg").textContent="Provjeravam…";
+  run("ping").then(function(){$("dlgLogin").close();ready=false;load()}).catch(function(err){$("lgMsg").textContent=errMsg(err)});
+});
+$("dlgLogin").addEventListener("cancel",function(e){if(!cred())e.preventDefault()});
+document.querySelector("h1").addEventListener("click",function(){showLogin("Promjena korisnika ili PIN-a.")});
+$("fabAdd").onclick=function(){openItem(null)};
+
+/* ---------- klikovi na popisu ---------- */
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-act]");if(!b)return;
+  var li=b.closest("[data-id]");if(!li)return;
+  var id=li.getAttribute("data-id"),act=b.getAttribute("data-act"),it=items[id];
+  if(!it)return;
+  if(act==="edit")openItem(id);
+  else if(act==="inc")bump(id,1);
+  else if(act==="dec")bump(id,-1);
+  else if(act==="bought"){var n=need(it);bump(id,n);toast("Kupljeno: "+it.name+" +"+n)}
+  else if(act==="skip"){
+    var prev=it.buy;it.buy="ne";render();
+    track(run("setBuy",id,"ne")).then(function(res){items[id]=res;render();toast("Maknuto s popisa: "+res.name)}).catch(function(e){it.buy=prev;render();fail(e)});
+  }
+});
+$("shopAdd").addEventListener("submit",function(e){
+  e.preventDefault();var n=$("shopName").value.trim();if(!n)return;$("shopName").value="";
+  var ex=arr().filter(function(i){return fold(i.name)===fold(n)})[0];
+  if(ex){ex.buy="da";render();track(run("setBuy",ex.id,"da")).then(function(res){items[res.id]=res;render();toast("Na popisu: "+res.name)}).catch(fail);return}
+  toast("Spremam…");
+  track(run("saveItem",{name:n,qty:0,buy:"da"})).then(function(res){items[res.id]=res;render();toast("Na popisu: "+res.name)}).catch(fail);
+});
+/* ---------- kopiranje (s rezervom za preglednike koji ne dopuštaju međuspremnik) ---------- */
+function legacyCopy(text,ta){
+  var own=!ta;
+  if(own){ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta)}
+  ta.focus();ta.select();try{ta.setSelectionRange(0,text.length)}catch(e){}
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  if(own)document.body.removeChild(ta);
+  return ok;
+}
+function copyText(text,label,ta){
+  var done=function(){toast(label+" je kopiran.")};
+  var fallback=function(){if(legacyCopy(text,ta))done();else toast("Kopiranje nije dopušteno. Označite tekst i kopirajte ga ručno.")};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback)}else fallback();
+}
+$("copyShop").onclick=function(){
+  var t=shopItems().map(function(i){return "- "+i.name+" ("+need(i)+" kom)"}).join("\n");
+  if(!t){toast("Popis je prazan.");return}
+  copyText(t,"Popis");
+};
+
+/* ---------- recept ---------- */
+function recipePrompt(){
+  var have=arr().filter(function(i){return (i.qty||0)>0});
+  var soon=have.filter(function(i){var d=daysTo(i.expiry);return d!==null&&d<=30})
+    .sort(function(a,b){return daysTo(a.expiry)-daysTo(b.expiry)});
+  var rest=have.filter(function(i){return soon.indexOf(i)<0}).sort(function(a,b){return (a.cat||"").localeCompare(b.cat||"","hr")||a.name.localeCompare(b.name,"hr")});
+  var line=function(i){return "- "+i.name+" ("+i.qty+" kom"+(i.note?", "+i.note:"")+")"};
+  var wish=$("recipeWish").value.trim();
+  var t="Predloži mi 3 recepta koja mogu pripremiti od namirnica koje imam kod kuće"+(wish?" ("+wish+")":"")+".\n"+
+    "Koristi prvenstveno namirnice s popisa. Osnovne stvari (sol, papar, voda) smiješ pretpostaviti, a sve ostalo što treba dokupiti jasno označi.\n"+
+    "Prednost daj namirnicama koje uskoro ističu. Za svaki recept navedi sastojke s količinama i kratak postupak. Odgovori na hrvatskom jeziku.\n";
+  if(soon.length)t+="\nUskoro ističe:\n"+soon.map(function(i){return line(i)+" – rok "+i.expiry.split("-").reverse().join(".")+"."}).join("\n")+"\n";
+  t+="\nNa zalihi:\n"+rest.map(line).join("\n");
+  return t;
+}
+$("recipeTop").onclick=function(){
+  if(!ready){toast("Zaliha se još učitava.");return}
+  $("recipeText").value=recipePrompt();$("dlgRecipe").showModal();
+};
+$("recipeWish").addEventListener("input",function(){$("recipeText").value=recipePrompt()});
+$("recipeCopy").onclick=function(){copyText($("recipeText").value,"Tekst",$("recipeText"))};
+$("recipeClose").onclick=function(){$("dlgRecipe").close()};
+$("tabStock").onclick=function(){setTab("stock")};$("tabShop").onclick=function(){setTab("shop")};
+["q","fLoc","fSort"].forEach(function(id){$(id).addEventListener("input",render)});
+
+/* ---------- osvježavanje (promjene ostalih ukućana) ---------- */
+function dialogsOpen(){return $("dlgItem").open||$("dlgScan").open||$("dlgRecipe").open||$("dlgLogin").open}
+setInterval(function(){if(document.visibilityState==="visible"&&!dialogsOpen())load()},30000);
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&!dialogsOpen())load()});
+render();if(cred())load();else showLogin("");
+})();
+</script>
+</body>
+</html>
